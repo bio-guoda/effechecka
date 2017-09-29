@@ -150,13 +150,24 @@ trait Service extends Protocols
   def selectorRoutes(ocSelector: Selector): Route = {
     get {
       path("checklist") {
-        handleChecklistSummary(ocSelector)
+        handleChecklistSummary(ChecklistRequest(ocSelector, Some(20)))
       } ~ path("checklist.tsv") {
-        handleChecklistTsv(ocSelector)
+        parameters('limit.as[Int] ?) { limit =>
+          handleChecklistTsv(ChecklistRequest(ocSelector, limit))
+        }
       } ~ path("occurrences") {
-        handleOccurrences(ocSelector)
+        addedParams.as(DateTimeSelector) {
+          added =>
+            handleOccurrences(OccurrenceRequest(ocSelector, Some(20), added))
+        }
       } ~ path("occurrences.tsv") {
-        handleOccurrencesTsv(ocSelector)
+        addedParams.as(DateTimeSelector) {
+          added =>
+            parameters('limit.as[Int] ?) {
+              limit =>
+                handleOccurrencesTsv(OccurrenceRequest(selector = ocSelector, limit = limit, added))
+            }
+        }
       } ~ path("monitors") {
         complete {
           monitorOf(ocSelector)
@@ -164,12 +175,6 @@ trait Service extends Protocols
       }
     }
 
-  }
-
-  private def handleChecklistTsv(ocSelector: Selector): Route = {
-    parameters('limit.as[Int] ?) { limit =>
-      handleChecklistTsv(ChecklistRequest(ocSelector, limit))
-    }
   }
 
   private def handleChecklistTsv(checklist: ChecklistRequest) = {
@@ -203,10 +208,6 @@ trait Service extends Protocols
     }
   }
 
-  private def handleChecklistSummary(ocSelector: Selector): Route = {
-    handleChecklistSummary(ChecklistRequest(ocSelector, Some(20)))
-  }
-
   private def handleChecklistSummary(checklist: ChecklistRequest) = {
     val statusOpt: Option[String] = statusOf(checklist.selector)
     complete {
@@ -236,14 +237,6 @@ trait Service extends Protocols
 
   val addedParams = parameters('addedBefore.as[String] ?, 'addedAfter.as[String] ?)
 
-
-  def handleOccurrences(ocSelector: Selector): server.Route = {
-    addedParams.as(DateTimeSelector) {
-      added =>
-        handleOccurrences(OccurrenceRequest(ocSelector, Some(20), added))
-    }
-  }
-
   private def handleOccurrences(ocRequest: OccurrenceRequest) = {
     val ocSelector = ocRequest.selector
     val statusOpt: Option[String] = statusOf(ocSelector)
@@ -266,16 +259,6 @@ trait Service extends Protocols
   }
 
   private val tsvContentType = MediaTypes.`text/tab-separated-values`.withCharset(HttpCharsets.`UTF-8`)
-
-  def handleOccurrencesTsv(ocSelector: Selector): server.Route = {
-    addedParams.as(DateTimeSelector) {
-      added =>
-        parameters('limit.as[Int] ?) {
-          limit =>
-            handleOccurrencesTsv(OccurrenceRequest(selector = ocSelector, limit = limit, added))
-        }
-    }
-  }
 
   private def handleOccurrencesTsv(ocRequest: OccurrenceRequest) = {
     val statusOpt: Option[String] = statusOf(ocRequest.selector)

@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jhpoelen/effechecka.svg?branch=master)](https://travis-ci.org/jhpoelen/effechecka)
+[![Build Status](https://travis-ci.org/bio-guoda/effechecka.svg?branch=master)](https://travis-ci.org/bio-guoda/effechecka)
 
 # effechecka
 Web API to generate taxonomic checklist, occurrence lists and to help monitor biodiversity data access.

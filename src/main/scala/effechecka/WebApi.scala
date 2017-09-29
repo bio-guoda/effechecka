@@ -112,6 +112,26 @@ trait Service extends Protocols
           complete("pong")
         } ~ get {
           complete(HttpResponse(status = StatusCodes.BadRequest))
+        } ~ path("checklist") {
+          (post & entity(as[ChecklistRequest])) {
+            request =>
+              handleChecklistSummary(request)
+          }
+        } ~ path("checklist.tsv") {
+          (post & entity(as[ChecklistRequest])) {
+            request =>
+                handleChecklistTsv(request)
+          }
+        } ~ path("occurrences") {
+          (post & entity(as[OccurrenceRequest])) {
+            request =>
+              handleOccurrences(request)
+          }
+        } ~ path("occurrences.tsv") {
+          (post & entity(as[OccurrenceRequest])) {
+            request =>
+              handleOccurrencesTsv(request)
+          }
         }
       }
     }
@@ -145,22 +165,25 @@ trait Service extends Protocols
 
   }
 
-  private def handleChecklistTsv(ocSelector: Selector) = {
+  private def handleChecklistTsv(ocSelector: Selector): Route = {
     get {
       parameters('limit.as[Int] ?) { limit =>
-        val checklist = ChecklistRequest(ocSelector, limit)
-        val statusOpt: Option[String] = statusOf(checklist)
-        statusOpt match {
-          case Some("ready") =>
-            encodeResponse {
-              complete {
-                HttpEntity(tsvContentType, tsvFor(checklist))
-              }
-            }
-          case _ =>
-            submitIfPossible(checklist.selector, checklistgenerator)
-        }
+        handleChecklistTsv(ChecklistRequest(ocSelector, limit))
       }
+    }
+  }
+
+  private def handleChecklistTsv(checklist: ChecklistRequest) = {
+    val statusOpt: Option[String] = statusOf(checklist)
+    statusOpt match {
+      case Some("ready") =>
+        encodeResponse {
+          complete {
+            HttpEntity(tsvContentType, tsvFor(checklist))
+          }
+        }
+      case _ =>
+        submitIfPossible(checklist.selector, checklistgenerator)
     }
   }
 
@@ -181,22 +204,26 @@ trait Service extends Protocols
     }
   }
 
-  private def handleChecklistSummary(ocSelector: Selector) = {
+  private def handleChecklistSummary(ocSelector: Selector): Route = {
     get {
       val checklist = ChecklistRequest(ocSelector, Some(20))
-      val statusOpt: Option[String] = statusOf(checklist)
-      complete {
-        statusOpt match {
-          case Some("ready") =>
-            Checklist(ocSelector.withUUID(), "ready", itemsFor(checklist).toList)
-          case _ =>
-            checklist.selector match {
-              case s: SelectorParams =>
-                val msg = replyForSubmission(s, checklistgenerator)
-                Checklist(s.withUUID(), msg, List.empty)
-              case _ => StatusCodes.BadRequest
-            }
-        }
+      handleChecklistSummary(checklist)
+    }
+  }
+
+  private def handleChecklistSummary(checklist: ChecklistRequest) = {
+    val statusOpt: Option[String] = statusOf(checklist.selector)
+    complete {
+      statusOpt match {
+        case Some("ready") =>
+          Checklist(checklist.selector.withUUID(), "ready", itemsFor(checklist).toList)
+        case _ =>
+          checklist.selector match {
+            case s: SelectorParams =>
+              val msg = replyForSubmission(s, checklistgenerator)
+              Checklist(s.withUUID(), msg, List.empty)
+            case _ => StatusCodes.BadRequest
+          }
       }
     }
   }
@@ -218,24 +245,28 @@ trait Service extends Protocols
     get {
       addedParams.as(DateTimeSelector) {
         added =>
-          val ocRequest = OccurrenceRequest(ocSelector, Some(20), added)
-          val statusOpt: Option[String] = statusOf(ocSelector)
-          complete {
-            statusOpt match {
-              case Some("ready") =>
-                OccurrenceCollection(ocSelector.withUUID(), Some("ready"), occurrencesFor(ocRequest).toList)
-              case None =>
-                ocSelector match {
-                  case s: SelectorParams => {
-                    val msg = replyForSubmission(s, occurrencecollectiongenerator)
-                    OccurrenceCollection(ocSelector.withUUID(), Some(msg))
-                  }
-                  case _ => StatusCodes.BadRequest
-                }
-              case _ =>
-                OccurrenceCollection(ocSelector.withUUID(), statusOpt)
+          handleOccurrences(OccurrenceRequest(ocSelector, Some(20), added))
+      }
+    }
+  }
+
+  private def handleOccurrences(ocRequest: OccurrenceRequest) = {
+    val ocSelector = ocRequest.selector
+    val statusOpt: Option[String] = statusOf(ocSelector)
+    complete {
+      statusOpt match {
+        case Some("ready") =>
+          OccurrenceCollection(ocSelector.withUUID(), Some("ready"), occurrencesFor(ocRequest).toList)
+        case None =>
+          ocSelector match {
+            case s: SelectorParams => {
+              val msg = replyForSubmission(s, occurrencecollectiongenerator)
+              OccurrenceCollection(ocSelector.withUUID(), Some(msg))
             }
+            case _ => StatusCodes.BadRequest
           }
+        case _ =>
+          OccurrenceCollection(ocSelector.withUUID(), statusOpt)
       }
     }
   }
@@ -248,21 +279,24 @@ trait Service extends Protocols
         added =>
           parameters('limit.as[Int] ?) {
             limit =>
-              val ocRequest = OccurrenceRequest(selector = ocSelector, limit = limit, added)
-              val statusOpt: Option[String] = statusOf(ocSelector)
-              statusOpt match {
-                case Some("ready") =>
-                  encodeResponse {
-                    complete {
-                      HttpEntity(tsvContentType, occurrencesTsvFor(ocRequest))
-                    }
-                  }
-                case _ =>
-                  submitIfPossible(ocSelector, occurrencecollectiongenerator)
-              }
+              handleOccurrencesTsv(OccurrenceRequest(selector = ocSelector, limit = limit, added))
 
           }
       }
+    }
+  }
+
+  private def handleOccurrencesTsv(ocRequest: OccurrenceRequest) = {
+    val statusOpt: Option[String] = statusOf(ocRequest.selector)
+    statusOpt match {
+      case Some("ready") =>
+        encodeResponse {
+          complete {
+            HttpEntity(tsvContentType, occurrencesTsvFor(ocRequest))
+          }
+        }
+      case _ =>
+        submitIfPossible(ocRequest.selector, occurrencecollectiongenerator)
     }
   }
 

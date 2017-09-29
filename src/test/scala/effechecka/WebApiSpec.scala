@@ -155,8 +155,20 @@ class WebApiSpec extends WordSpec with Matchers
       }
     }
 
+    "return requested checklist post" in {
+      Post("/checklist", ChecklistRequest(SelectorParams(taxonSelector = "Animalia|Insecta", wktString = "ENVELOPE(-150,-50,40,10)"))) ~> route ~> check {
+        responseAs[Checklist] shouldEqual Checklist(selectorAnimaliaInsecta, "ready", List(ChecklistItem("donald", 1)))
+      }
+    }
+
     "return requested checklist.tsv" in {
       Get("/checklist.tsv?taxonSelector=Animalia,Insecta&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
+        responseAs[String] shouldEqual "taxonName\ttaxonPath\trecordCount\ndonald\tdonald\t1"
+      }
+    }
+
+    "return requested checklist.tsv post" in {
+      Post("/checklist.tsv", ChecklistRequest(SelectorParams(taxonSelector = "Animalia|Insecta", wktString = "ENVELOPE(-150,-50,40,10)", traitSelector = ""))) ~> route ~> check {
         responseAs[String] shouldEqual "taxonName\ttaxonPath\trecordCount\ndonald\tdonald\t1"
       }
     }
@@ -167,8 +179,20 @@ class WebApiSpec extends WordSpec with Matchers
       }
     }
 
+    "return requested checklist uuid with post" in {
+      Post("/checklist", ChecklistRequest(SelectorUUID("55e4b0a0-bcd9-566f-99bc-357439011d85"))) ~> route ~> check {
+        responseAs[Checklist] shouldEqual Checklist(SelectorUUID("55e4b0a0-bcd9-566f-99bc-357439011d85"), "ready", List(ChecklistItem("donald", 1)))
+      }
+    }
+
     "return requested occurrenceCollection" in {
       Get("/occurrences?taxonSelector=Animalia,Insecta&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
+        responseAs[OccurrenceCollection] shouldEqual OccurrenceCollection(selectorAnimaliaInsecta, Some("ready"), List(anOccurrence))
+      }
+    }
+
+    "return requested occurrenceCollection with post" in {
+      Post("/occurrences", OccurrenceRequest(SelectorParams(taxonSelector = "Animalia|Insecta", wktString = "ENVELOPE(-150,-50,40,10)"))) ~> route ~> check {
         responseAs[OccurrenceCollection] shouldEqual OccurrenceCollection(selectorAnimaliaInsecta, Some("ready"), List(anOccurrence))
       }
     }
@@ -179,8 +203,20 @@ class WebApiSpec extends WordSpec with Matchers
       }
     }
 
+    "occurrenceCollection request invalid taxon with post" in {
+      Post("/occurrences", OccurrenceRequest(SelectorParams(taxonSelector = "/etc/password", wktString = "ENVELOPE(-150,-50,40,10)"))) ~> route ~> check {
+        assertBadRequest
+      }
+    }
+
     "occurrenceCollection request invalid wktString" in {
       Get("/occurrences?taxonSelector=Animalia,Insecta&wktString=DUCK(-150,-50,40,10)") ~> route ~> check {
+        assertBadRequest
+      }
+    }
+
+    "occurrenceCollection request invalid wktString with post" in {
+      Post("/occurrences", OccurrenceRequest(SelectorParams(taxonSelector = "Animalia|Insecta", wktString = "DUCK(-150,-50,40,10)"))) ~> route ~> check {
         assertBadRequest
       }
     }
@@ -197,6 +233,12 @@ class WebApiSpec extends WordSpec with Matchers
       }
     }
 
+    "return requested occurrenceCollection uuid with post" in {
+      Post("/occurrences", OccurrenceRequest(SelectorUUID("55e4b0a0-bcd9-566f-99bc-357439011d85"))) ~> route ~> check {
+        responseAs[OccurrenceCollection] shouldEqual OccurrenceCollection(SelectorUUID("55e4b0a0-bcd9-566f-99bc-357439011d85"), Some("ready"), List(anOccurrence))
+      }
+    }
+
     "return requested occurrenceCollection tsv" in {
       Get("/occurrences.tsv?taxonSelector=Animalia,Insecta&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
         responseAs[String] should be(
@@ -205,8 +247,24 @@ class WebApiSpec extends WordSpec with Matchers
       }
     }
 
+    "return requested occurrenceCollection tsv with post" in {
+      Post("/occurrences.tsv", OccurrenceRequest(SelectorParams(taxonSelector = "Animalia|Insecta", wktString = "ENVELOPE(-150,-50,40,10)"))) ~> route ~> check {
+        responseAs[String] should be(
+          "taxonName\ttaxonPath\tlat\tlng\teventStartDate\toccurrenceId\tfirstAddedDate\tsource\toccurrenceUrl\n" +
+            "mickey\tCartoona | mickey\t12.1\t32.1\t1970-01-01T00:00:00.123Z\trecordId\t1970-01-01T00:00:00.456Z\tarchiveId\t")
+      }
+    }
+
     "return requested occurrenceCollection tsv by uuid" in {
       Get("/occurrences.tsv?uuid=55e4b0a0-bcd9-566f-99bc-357439011d85") ~> route ~> check {
+        responseAs[String] should be(
+          "taxonName\ttaxonPath\tlat\tlng\teventStartDate\toccurrenceId\tfirstAddedDate\tsource\toccurrenceUrl\n" +
+            "mickey\tCartoona | mickey\t12.1\t32.1\t1970-01-01T00:00:00.123Z\trecordId\t1970-01-01T00:00:00.456Z\tarchiveId\t")
+      }
+    }
+
+    "return requested occurrenceCollection tsv by uuid with post" in {
+      Post("/occurrences.tsv", OccurrenceRequest(SelectorUUID("55e4b0a0-bcd9-566f-99bc-357439011d85"))) ~> route ~> check {
         responseAs[String] should be(
           "taxonName\ttaxonPath\tlat\tlng\teventStartDate\toccurrenceId\tfirstAddedDate\tsource\toccurrenceUrl\n" +
             "mickey\tCartoona | mickey\t12.1\t32.1\t1970-01-01T00:00:00.123Z\trecordId\t1970-01-01T00:00:00.456Z\tarchiveId\t")

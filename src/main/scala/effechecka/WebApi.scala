@@ -68,6 +68,7 @@ trait Service extends Protocols
     def normalizeSelector(taxonSelector: String) = {
       taxonSelector.replace(',', '|')
     }
+
     parameters('taxonSelector.as[String] ? "", 'wktString.as[String], 'traitSelector.as[String] ? "").tflatMap {
       case (taxon: String, wkt: String, traits: String) => {
         val selector = SelectorParams(taxonSelector = normalizeSelector(taxon),
@@ -120,7 +121,7 @@ trait Service extends Protocols
         } ~ path("checklist.tsv") {
           (post & entity(as[ChecklistRequest])) {
             request =>
-                handleChecklistTsv(request)
+              handleChecklistTsv(request)
           }
         } ~ path("occurrences") {
           (post & entity(as[OccurrenceRequest])) {
@@ -147,16 +148,16 @@ trait Service extends Protocols
   private val checklistgenerator = "ChecklistGenerator"
 
   def selectorRoutes(ocSelector: Selector): Route = {
-    path("checklist") {
-      handleChecklistSummary(ocSelector)
-    } ~ path("checklist.tsv") {
-      handleChecklistTsv(ocSelector)
-    } ~ path("occurrences") {
-      handleOccurrences(ocSelector)
-    } ~ path("occurrences.tsv") {
-      handleOccurrencesTsv(ocSelector)
-    } ~ path("monitors") {
-      get {
+    get {
+      path("checklist") {
+        handleChecklistSummary(ocSelector)
+      } ~ path("checklist.tsv") {
+        handleChecklistTsv(ocSelector)
+      } ~ path("occurrences") {
+        handleOccurrences(ocSelector)
+      } ~ path("occurrences.tsv") {
+        handleOccurrencesTsv(ocSelector)
+      } ~ path("monitors") {
         complete {
           monitorOf(ocSelector)
         }
@@ -166,10 +167,8 @@ trait Service extends Protocols
   }
 
   private def handleChecklistTsv(ocSelector: Selector): Route = {
-    get {
-      parameters('limit.as[Int] ?) { limit =>
-        handleChecklistTsv(ChecklistRequest(ocSelector, limit))
-      }
+    parameters('limit.as[Int] ?) { limit =>
+      handleChecklistTsv(ChecklistRequest(ocSelector, limit))
     }
   }
 
@@ -205,10 +204,7 @@ trait Service extends Protocols
   }
 
   private def handleChecklistSummary(ocSelector: Selector): Route = {
-    get {
-      val checklist = ChecklistRequest(ocSelector, Some(20))
-      handleChecklistSummary(checklist)
-    }
+    handleChecklistSummary(ChecklistRequest(ocSelector, Some(20)))
   }
 
   private def handleChecklistSummary(checklist: ChecklistRequest) = {
@@ -242,11 +238,9 @@ trait Service extends Protocols
 
 
   def handleOccurrences(ocSelector: Selector): server.Route = {
-    get {
-      addedParams.as(DateTimeSelector) {
-        added =>
-          handleOccurrences(OccurrenceRequest(ocSelector, Some(20), added))
-      }
+    addedParams.as(DateTimeSelector) {
+      added =>
+        handleOccurrences(OccurrenceRequest(ocSelector, Some(20), added))
     }
   }
 
@@ -274,15 +268,12 @@ trait Service extends Protocols
   private val tsvContentType = MediaTypes.`text/tab-separated-values`.withCharset(HttpCharsets.`UTF-8`)
 
   def handleOccurrencesTsv(ocSelector: Selector): server.Route = {
-    get {
-      addedParams.as(DateTimeSelector) {
-        added =>
-          parameters('limit.as[Int] ?) {
-            limit =>
-              handleOccurrencesTsv(OccurrenceRequest(selector = ocSelector, limit = limit, added))
-
-          }
-      }
+    addedParams.as(DateTimeSelector) {
+      added =>
+        parameters('limit.as[Int] ?) {
+          limit =>
+            handleOccurrencesTsv(OccurrenceRequest(selector = ocSelector, limit = limit, added))
+        }
     }
   }
 

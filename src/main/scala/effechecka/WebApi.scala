@@ -130,10 +130,7 @@ trait Service extends Protocols
   private def handleRequest[T](request: T, selector: Selector, handler: (T) => Route) = {
     val isValid = selector match {
       case s: SelectorParams => valid(s)
-      case s: SelectorUUID => {
-        SelectorUUID(uuid = UUID.fromString(s.uuid).toString)
-        true
-      }
+      case s: SelectorUUID => valid(s)
       case _ => false
     }
     if (isValid) {
@@ -142,6 +139,15 @@ trait Service extends Protocols
       complete {
         StatusCodes.BadRequest
       }
+    }
+  }
+
+  private def valid[T](s: SelectorUUID) = {
+    try {
+      UUID.fromString(s.uuid)
+      true
+    } catch {
+      case _: Exception => false
     }
   }
 

@@ -191,6 +191,12 @@ class WebApiSpec extends WordSpec with Matchers
       }
     }
 
+    "return requested checklist invalid uuid with post" in {
+      Post("/checklist", ChecklistRequest(SelectorUUID("this-aint-no-uuid"))) ~> route ~> check {
+        assertBadRequest
+      }
+    }
+
     "return requested occurrenceCollection" in {
       Get("/occurrences?taxonSelector=Animalia,Insecta&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
         responseAs[OccurrenceCollection] shouldEqual OccurrenceCollection(selectorAnimaliaInsecta, Some("ready"), List(anOccurrence))

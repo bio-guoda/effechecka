@@ -113,12 +113,12 @@ trait Service extends Protocols
         } ~ path("checklist") {
           (post & entity(as[ChecklistRequest])) {
             request =>
-              handleRequest[ChecklistRequest](request, request.selector, handleChecklistSummary)
+              handleRequest[ChecklistRequest](request.copy(limit = Some(20)), request.selector, handleChecklistSummary)
           }
         } ~ path("occurrences") {
           (post & entity(as[OccurrenceRequest])) {
             request =>
-              handleRequest[OccurrenceRequest](request, request.selector, handleOccurrences)
+              handleRequest[OccurrenceRequest](request.copy(limit = Some(20)), request.selector, handleOccurrences)
           }
         } ~ {
           complete(HttpResponse(status = StatusCodes.BadRequest))

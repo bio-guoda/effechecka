@@ -7,8 +7,8 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers._
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{Directive0, Directive1, Route, ValidationRejection}
+import akka.http.scaladsl.server.Directives.{get, _}
+import akka.http.scaladsl.server._
 import akka.http.scaladsl.{Http, server}
 import akka.stream._
 import org.apache.hadoop.conf.Configuration
@@ -95,7 +95,6 @@ trait Service extends Protocols
     uuidParams | selectorValueParams
   }
 
-
   val route =
     logRequestResult("checklist-service") {
       addAccessControlHeaders {
@@ -111,32 +110,40 @@ trait Service extends Protocols
           }
         } ~ path("ping") {
           complete("pong")
-        } ~ get {
-          complete(HttpResponse(status = StatusCodes.BadRequest))
         } ~ path("checklist") {
           (post & entity(as[ChecklistRequest])) {
             request =>
-              handleChecklistSummary(request)
-          }
-        } ~ path("checklist.tsv") {
-          (post & entity(as[ChecklistRequest])) {
-            request =>
-              handleChecklistTsv(request)
+              handleRequest[ChecklistRequest](request, request.selector, handleChecklistSummary)
           }
         } ~ path("occurrences") {
           (post & entity(as[OccurrenceRequest])) {
             request =>
-              handleOccurrences(request)
+              handleRequest[OccurrenceRequest](request, request.selector, handleOccurrences)
           }
-        } ~ path("occurrences.tsv") {
-          (post & entity(as[OccurrenceRequest])) {
-            request =>
-              handleOccurrencesTsv(request)
-          }
+        } ~ {
+          complete(HttpResponse(status = StatusCodes.BadRequest))
         }
       }
     }
 
+
+  private def handleRequest[T](request: T, selector: Selector, handler: (T) => Route) = {
+    val isValid = selector match {
+      case s: SelectorParams => valid(s)
+      case s: SelectorUUID => {
+        SelectorUUID(uuid = UUID.fromString(s.uuid).toString)
+        true
+      }
+      case _ => false
+    }
+    if (isValid) {
+      handler(request)
+    } else {
+      complete {
+        StatusCodes.BadRequest
+      }
+    }
+  }
 
   def usageRoutes(source: String): Route = {
     path("monitoredOccurrences.tsv") {
@@ -260,7 +267,7 @@ trait Service extends Protocols
 
   private val tsvContentType = MediaTypes.`text/tab-separated-values`.withCharset(HttpCharsets.`UTF-8`)
 
-  private def handleOccurrencesTsv(ocRequest: OccurrenceRequest) = {
+  def handleOccurrencesTsv(ocRequest: OccurrenceRequest) = {
     val statusOpt: Option[String] = statusOf(ocRequest.selector)
     statusOpt match {
       case Some("ready") =>

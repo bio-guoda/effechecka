@@ -161,14 +161,20 @@ class WebApiSpec extends WordSpec with Matchers
       }
     }
 
-    "return requested checklist.tsv" in {
-      Get("/checklist.tsv?taxonSelector=Animalia,Insecta&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
-        responseAs[String] shouldEqual "taxonName\ttaxonPath\trecordCount\ndonald\tdonald\t1"
+    "return requested checklist post invalid taxon" in {
+      Post("/checklist", ChecklistRequest(SelectorParams(taxonSelector = "/etc/password", wktString = "ENVELOPE(-150,-50,40,10)"))) ~> route ~> check {
+        assertBadRequest
       }
     }
 
-    "return requested checklist.tsv post" in {
-      Post("/checklist.tsv", ChecklistRequest(SelectorParams(taxonSelector = "Animalia|Insecta", wktString = "ENVELOPE(-150,-50,40,10)", traitSelector = ""))) ~> route ~> check {
+    "return requested checklist post invalid wkt" in {
+      Post("/checklist", ChecklistRequest(SelectorParams(taxonSelector = "Aves", wktString = "DUCK(-150,-50,40,10)"))) ~> route ~> check {
+        assertBadRequest
+      }
+    }
+
+    "return requested checklist.tsv" in {
+      Get("/checklist.tsv?taxonSelector=Animalia,Insecta&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
         responseAs[String] shouldEqual "taxonName\ttaxonPath\trecordCount\ndonald\tdonald\t1"
       }
     }
@@ -247,14 +253,6 @@ class WebApiSpec extends WordSpec with Matchers
       }
     }
 
-    "return requested occurrenceCollection tsv with post" in {
-      Post("/occurrences.tsv", OccurrenceRequest(SelectorParams(taxonSelector = "Animalia|Insecta", wktString = "ENVELOPE(-150,-50,40,10)"))) ~> route ~> check {
-        responseAs[String] should be(
-          "taxonName\ttaxonPath\tlat\tlng\teventStartDate\toccurrenceId\tfirstAddedDate\tsource\toccurrenceUrl\n" +
-            "mickey\tCartoona | mickey\t12.1\t32.1\t1970-01-01T00:00:00.123Z\trecordId\t1970-01-01T00:00:00.456Z\tarchiveId\t")
-      }
-    }
-
     "return requested occurrenceCollection tsv by uuid" in {
       Get("/occurrences.tsv?uuid=55e4b0a0-bcd9-566f-99bc-357439011d85") ~> route ~> check {
         responseAs[String] should be(
@@ -262,15 +260,6 @@ class WebApiSpec extends WordSpec with Matchers
             "mickey\tCartoona | mickey\t12.1\t32.1\t1970-01-01T00:00:00.123Z\trecordId\t1970-01-01T00:00:00.456Z\tarchiveId\t")
       }
     }
-
-    "return requested occurrenceCollection tsv by uuid with post" in {
-      Post("/occurrences.tsv", OccurrenceRequest(SelectorUUID("55e4b0a0-bcd9-566f-99bc-357439011d85"))) ~> route ~> check {
-        responseAs[String] should be(
-          "taxonName\ttaxonPath\tlat\tlng\teventStartDate\toccurrenceId\tfirstAddedDate\tsource\toccurrenceUrl\n" +
-            "mickey\tCartoona | mickey\t12.1\t32.1\t1970-01-01T00:00:00.123Z\trecordId\t1970-01-01T00:00:00.456Z\tarchiveId\t")
-      }
-    }
-
 
     "return requested monitored occurrences tsv" in {
       Get("/monitoredOccurrences.tsv?source=someSource") ~> route ~> check {

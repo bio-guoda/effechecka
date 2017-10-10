@@ -81,7 +81,7 @@ trait OccurrenceCollectionFetcherHDFS
                               occLimit: Option[Int] = None): Source[ByteString, NotUsed] = {
 
     val patternFor1 = patternFor(s"source-of-monitored-occurrence/source=$source") match {
-      case Some(pattern) => Some(pattern.withFilter(pathFilterWithDateRange(added)))
+      case Some(pattern) => Some(pattern.withFilter(pathFilterWithDateRange(Some(added))))
       case _ => None
     }
 

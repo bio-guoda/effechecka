@@ -27,7 +27,7 @@ class HDFSUtilSpec extends TestKit(ActorSystem("IntegrationTest"))
 
   "path with filter" in {
     val request = OccurrenceRequest(SelectorParams("Aves|Mammalia", "some wkt", "some trait"),
-      added = DateTimeSelector(before = Some("2017-05-01"), after = Some("2016-02-03")))
+      added = Some(DateTimeSelector(before = Some("2017-05-01"), after = Some("2016-02-03"))))
 
     val pattern: FilePattern = selectPathByDateRange(request, "some/path")
 
@@ -48,7 +48,7 @@ class HDFSUtilSpec extends TestKit(ActorSystem("IntegrationTest"))
 
   "path with before date filter" in {
     val request = OccurrenceRequest(SelectorParams("Aves|Mammalia", "some wkt", "some trait"),
-      added = DateTimeSelector(before = Some("2017-06-01")))
+      added = Some(DateTimeSelector(before = Some("2017-06-01"))))
 
     val pattern: FilePattern = selectPathByDateRange(request, "some/path")
 
@@ -59,7 +59,7 @@ class HDFSUtilSpec extends TestKit(ActorSystem("IntegrationTest"))
 
   "path with after date filter" in {
     val request = OccurrenceRequest(SelectorParams("Aves|Mammalia", "some wkt", "some trait"),
-      added = DateTimeSelector(after = Some("2016-06-01")))
+      added = Some(DateTimeSelector(after = Some("2016-06-01"))))
 
     val pattern: FilePattern = selectPathByDateRange(request, "some/path")
 

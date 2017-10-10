@@ -53,8 +53,9 @@ trait HDFSUtil extends DateUtil with Logging {
       .withFilter(pathFilterWithDateRange(request.added))
   }
 
-  def pathFilterWithDateRange(added: DateTimeSelector): (Path) => Boolean = {
+  def pathFilterWithDateRange(addedOpt: Option[DateTimeSelector]): (Path) => Boolean = {
     x => {
+      val added = addedOpt.getOrElse(DateTimeSelector())
       if (added.after.isEmpty && added.before.isEmpty) {
         true
       } else {

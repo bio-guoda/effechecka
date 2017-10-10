@@ -171,14 +171,14 @@ trait Service extends Protocols
       } ~ path("occurrences") {
         addedParams.as(DateTimeSelector) {
           added =>
-            handleOccurrences(OccurrenceRequest(ocSelector, Some(20), added))
+            handleOccurrences(OccurrenceRequest(ocSelector, Some(20), Some(added)))
         }
       } ~ path("occurrences.tsv") {
         addedParams.as(DateTimeSelector) {
           added =>
             parameters('limit.as[Int] ?) {
               limit =>
-                handleOccurrencesTsv(OccurrenceRequest(selector = ocSelector, limit = limit, added))
+                handleOccurrencesTsv(OccurrenceRequest(selector = ocSelector, limit = limit, Some(added)))
             }
         }
       } ~ path("monitors") {

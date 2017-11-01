@@ -212,7 +212,7 @@ trait Service extends Protocols
           if (response.success.getOrElse(false)) {
             StatusCodes.Processing
           } else {
-            StatusCodes.BadRequest
+            StatusCodes.ServiceUnavailable
           }
         }
         case _ =>

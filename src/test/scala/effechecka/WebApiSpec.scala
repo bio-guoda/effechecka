@@ -113,7 +113,7 @@ class WebApiSubmitSpec extends WordSpec with Matchers with ScalatestRouteTest
     }
     "provide an appropriate status code" in {
       Get("/checklist.tsv?taxonSelector=Animalia,Insecta&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
-        status shouldBe StatusCodes.BadRequest
+        status shouldBe StatusCodes.ServiceUnavailable
       }
     }
   }
@@ -127,7 +127,7 @@ class WebApiSubmitSpec extends WordSpec with Matchers with ScalatestRouteTest
     }
     "provide an appropriate status code" in {
       Get("/occurrences.tsv?taxonSelector=Animalia,Insecta&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
-        status shouldBe StatusCodes.BadRequest
+        status shouldBe StatusCodes.ServiceUnavailable
       }
     }
   }

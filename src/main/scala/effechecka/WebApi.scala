@@ -222,7 +222,7 @@ trait Service extends Protocols
   }
 
   private def handleChecklistSummary(checklist: ChecklistRequest) = {
-    val statusOpt: Option[String] = statusOf(checklist.selector)
+    val statusOpt: Option[String] = statusOf(checklist)
     complete {
       statusOpt match {
         case Some("ready") =>

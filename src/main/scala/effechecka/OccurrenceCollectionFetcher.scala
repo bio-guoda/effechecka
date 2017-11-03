@@ -11,7 +11,7 @@ trait OccurrenceCollectionFetcher {
 
   def monitoredOccurrencesFor(source: String, added: DateTimeSelector, occLimit: Option[Int]): Source[ByteString, NotUsed]
 
-  def statusOf(selector: Selector): Option[String]
+  def statusOf(request: OccurrenceRequest): Option[String]
 
   def monitors(): List[OccurrenceMonitor]
 

@@ -36,14 +36,14 @@ trait ChecklistFetcherEmpty extends ChecklistFetcher {
 }
 
 trait OccurrenceCollectionFetcherEmpty extends OccurrenceCollectionFetcher {
-  def occurrencesTsvFor(checklist: OccurrenceRequest): Source[ByteString, NotUsed] = throw new IllegalArgumentException()
+  def occurrencesTsvFor(req: OccurrenceRequest): Source[ByteString, NotUsed] = throw new IllegalArgumentException()
 
-  def occurrencesFor(checklist: OccurrenceRequest): Iterator[Occurrence] = throw new IllegalArgumentException()
+  def occurrencesFor(req: OccurrenceRequest): Iterator[Occurrence] = throw new IllegalArgumentException()
 
   def monitoredOccurrencesFor(source: String, added: DateTimeSelector, occLimit: Option[Int]): Source[ByteString, NotUsed]
    = throw new IllegalArgumentException()
 
-  def statusOf(selector: Selector): Option[String] = None
+  def statusOf(req: OccurrenceRequest): Option[String] = None
 
   def monitors(): List[OccurrenceMonitor] = throw new IllegalArgumentException()
 
@@ -68,7 +68,7 @@ trait OccurrenceCollectionFetcherStatic extends OccurrenceCollectionFetcher {
     Iterator(ByteString.fromString("occurrenceId\tmonitorUUID"), ByteString.fromString("\nsome id\t"),
       ByteString.fromString("\nanother id\tsomeUUID")))
 
-  def statusOf(selector: Selector): Option[String] = Some("ready")
+  def statusOf(req: OccurrenceRequest): Option[String] = Some("ready")
 
   def monitors(): List[OccurrenceMonitor] = List(aMonitor, anotherMonitor)
 

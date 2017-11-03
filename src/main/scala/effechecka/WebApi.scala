@@ -252,7 +252,7 @@ trait Service extends Protocols
 
   private def handleOccurrences(ocRequest: OccurrenceRequest) = {
     val ocSelector = ocRequest.selector
-    val statusOpt: Option[String] = statusOf(ocSelector)
+    val statusOpt: Option[String] = statusOf(ocRequest)
     complete {
       statusOpt match {
         case Some("ready") =>
@@ -274,7 +274,7 @@ trait Service extends Protocols
   private val tsvContentType = MediaTypes.`text/tab-separated-values`.withCharset(HttpCharsets.`UTF-8`)
 
   def handleOccurrencesTsv(ocRequest: OccurrenceRequest) = {
-    val statusOpt: Option[String] = statusOf(ocRequest.selector)
+    val statusOpt: Option[String] = statusOf(ocRequest)
     statusOpt match {
       case Some("ready") =>
         encodeResponse {

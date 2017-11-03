@@ -91,8 +91,8 @@ class OccurrenceCollectionFetcherHDFSSpec extends TestKit(ActorSystem("Integrati
     }
 
     "return status of monitor" in {
-      statusOf(ducksAndFrogs) should be(Some("ready"))
-      statusOf(SelectorParams("no|taxon", expectedWktString, "")) should be(None)
+      statusOf(OccurrenceRequest(ducksAndFrogs)) should be(Some("ready"))
+      statusOf(OccurrenceRequest(SelectorParams("no|taxon", expectedWktString, ""))) should be(None)
     }
 
   }

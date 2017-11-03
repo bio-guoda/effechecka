@@ -146,8 +146,8 @@ trait OccurrenceCollectionFetcherHDFS
     Await.result(Source.fromGraph(aGraph).runWith(Sink.seq), 30.second).toList.headOption
   }
 
-  def statusOf(selector: Selector): Option[String] = {
-    monitorOf(selector) match {
+  def statusOf(req: OccurrenceRequest): Option[String] = {
+    monitorOf(req.selector) match {
       case Some(aMonitor) => aMonitor.status
       case None => None
     }

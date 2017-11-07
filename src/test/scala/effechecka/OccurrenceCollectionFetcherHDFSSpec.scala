@@ -17,10 +17,10 @@ class OccurrenceCollectionFetcherHDFSSpec extends TestKit(ActorSystem("Integrati
   val expectedTraitSelector: String = ""
   val expectedSelector = SelectorParams("Animalia|Insecta", expectedWktString, expectedTraitSelector)
   val expectedSelectorUUID = SelectorUUID("55e4b0a0-bcd9-566f-99bc-357439011d85")
-  val expectedMonitor = OccurrenceMonitor(expectedSelector, Some("ready"), Some(3997))
+  val expectedMonitor = OccurrenceMonitor(expectedSelector, Some("ready"), Some(3997), 1499192650553L)
 
   val ducksAndFrogs = SelectorParams("Anas|Anura", "POLYGON ((-72.147216796875 41.492120839687786, -72.147216796875 43.11702412135048, -69.949951171875 43.11702412135048, -69.949951171875 41.492120839687786, -72.147216796875 41.492120839687786))").withUUID()
-  val ducksAndFrogsMonitor = OccurrenceMonitor(ducksAndFrogs, Some("ready"), Some(239543))
+  val ducksAndFrogsMonitor = OccurrenceMonitor(ducksAndFrogs, Some("ready"), Some(239543), 1499192650553L)
 
 
   "HDFS" should {

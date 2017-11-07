@@ -108,19 +108,21 @@ trait OccurrenceCollectionFetcherHDFS
     val aGraph = GraphDSL.create(new ParquetReaderSourceShape(patternFor(s"occurrence-summary"), None)) { implicit builder =>
       (rows) =>
         import GraphDSL.Implicits._
-        val toMonitors = Flow[Row]
-          .map(row => {
-            val statusOpt = row.get("status").toString
-            val recordOpt = Some(Integer.parseInt(row.get("itemCount").toString))
-            OccurrenceMonitor(selectorFromRow(row),
-              Some(statusOpt),
-              recordOpt)
-          })
         val monitors = builder.add(toMonitors)
         rows ~> monitors
         SourceShape(monitors.out)
     }
     Await.result(Source.fromGraph(aGraph).runWith(Sink.seq), 30.second).toList
+  }
+
+  private def toMonitors: Flow[Row, OccurrenceMonitor, NotUsed] = {
+    Flow[Row]
+      .map(row => {
+        val statusOpt = row.get("status").toString
+        val recordOpt = Some(Integer.parseInt(row.get("itemCount").toString))
+        val lastModified = java.lang.Long.parseLong(row.get("lastModified").toString)
+        OccurrenceMonitor(selectorFromRow(row), Some(statusOpt), recordOpt, lastModified)
+      })
   }
 
   private def selectorFromRow(row: Row): Selector = {
@@ -130,20 +132,17 @@ trait OccurrenceCollectionFetcherHDFS
   }
 
   def monitorOf(selector: Selector): Option[OccurrenceMonitor] = {
-    val aGraph = GraphDSL.create(new ParquetReaderSourceShape(patternFor(s"occurrence-summary/${pathForSelector(selector)}"), Some(1))) { implicit builder =>
+    val aGraph = GraphDSL.create(new ParquetReaderSourceShape(patternFor(s"occurrence-summary/${pathForSelector(selector)}"), None)) { implicit builder =>
       (rows) =>
         import GraphDSL.Implicits._
-        val toMonitors = Flow[Row]
-          .map(row => {
-            val statusOpt = row.get("status").toString
-            val recordOpt = Some(Integer.parseInt(row.get("itemCount").toString))
-            OccurrenceMonitor(selector.withUUID(), Some(statusOpt), recordOpt)
-          })
         val monitors = builder.add(toMonitors)
         rows ~> monitors
         SourceShape(monitors.out)
     }
-    Await.result(Source.fromGraph(aGraph).runWith(Sink.seq), 30.second).toList.headOption
+    Await.result(Source.fromGraph(aGraph).runWith(Sink.seq), 30.second)
+      .toList
+      .sortWith(_.lastModified > _.lastModified)
+      .headOption
   }
 
   def statusOf(req: OccurrenceRequest): Option[String] = {

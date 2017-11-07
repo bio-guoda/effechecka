@@ -54,8 +54,8 @@ trait OccurrenceCollectionFetcherEmpty extends OccurrenceCollectionFetcher {
 trait OccurrenceCollectionFetcherStatic extends OccurrenceCollectionFetcher {
   val anOccurrence = Occurrence("Cartoona | mickey", 12.1, 32.1, 123L, 124L, "recordId", 456L, "archiveId")
   val aSelector = SelectorParams("Cartoona | mickey", "some wkt string", "some trait selector").withUUID()
-  val aMonitor = OccurrenceMonitor(aSelector, Some("some status"), Some(123))
-  val anotherMonitor = OccurrenceMonitor(SelectorParams("Cartoona | donald", "some wkt string", "some trait selector").withUUID(), None, Some(123))
+  val aMonitor = OccurrenceMonitor(aSelector, Some("some status"), Some(123), 0L)
+  val anotherMonitor = OccurrenceMonitor(SelectorParams("Cartoona | donald", "some wkt string", "some trait selector").withUUID(), None, Some(123), 0L)
 
   def occurrencesTsvFor(checklist: OccurrenceRequest): Source[ByteString, NotUsed]
   = Source.fromIterator(() => Iterator(ByteString.fromString("taxonName\ttaxonPath\tlat\tlng\teventStartDate\toccurrenceId\tfirstAddedDate\tsource\toccurrenceUrl"),
@@ -279,19 +279,19 @@ class WebApiSpec extends WordSpec with Matchers
 
     "return requested monitors" in {
       Get("/monitors") ~> route ~> check {
-        responseAs[List[OccurrenceMonitor]] should contain(OccurrenceMonitor(expectedCartoon, Some("some status"), Some(123)))
+        responseAs[List[OccurrenceMonitor]] should contain(OccurrenceMonitor(expectedCartoon, Some("some status"), Some(123), 0L))
       }
     }
 
     "return single monitor" in {
       Get("/monitors?taxonSelector=Animalia,Insecta&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
-        responseAs[OccurrenceMonitor] should be(OccurrenceMonitor(expectedCartoon, Some("some status"), Some(123)))
+        responseAs[OccurrenceMonitor] should be(OccurrenceMonitor(expectedCartoon, Some("some status"), Some(123), 0L))
       }
     }
 
     "return single monitor uuid" in {
       Get("/monitors?uuid=55e4b0a0-bcd9-566f-99bc-357439011d85") ~> route ~> check {
-        responseAs[OccurrenceMonitor] should be(OccurrenceMonitor(expectedCartoon, Some("some status"), Some(123)))
+        responseAs[OccurrenceMonitor] should be(OccurrenceMonitor(expectedCartoon, Some("some status"), Some(123), 0L))
       }
     }
 

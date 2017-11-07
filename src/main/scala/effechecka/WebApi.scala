@@ -47,7 +47,7 @@ trait Protocols extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val occurrenceRequestFormat = jsonFormat3(OccurrenceRequest)
   implicit val occurrenceFormat = jsonFormat8(Occurrence)
   implicit val occurrenceCollection2Format = jsonFormat3(OccurrenceCollection)
-  implicit val occurrenceMonitorFormat = jsonFormat3(OccurrenceMonitor)
+  implicit val occurrenceMonitorFormat = jsonFormat4(OccurrenceMonitor)
 }
 
 

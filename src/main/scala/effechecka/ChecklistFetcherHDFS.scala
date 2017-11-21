@@ -65,13 +65,29 @@ trait ChecklistFetcherHDFS
     }
   }
 
+  private def sourceForChecklistSummary(checklist: ChecklistRequest): Source[ChecklistSummary, NotUsed] = {
+    Source.fromGraph(toSummarySourceShape(checklist))
+  }
+
+  private def toSummarySourceShape(checklist: ChecklistRequest) = {
+    GraphDSL.create(new ParquetReaderSourceShape(checklistPath(checklist, "checklist-summary/", ""), checklist.limit)) { implicit builder =>
+      (checklist) =>
+        import GraphDSL.Implicits._
+        val toItems = Flow[Row]
+          .map(row => ChecklistSummary(row.get("uuid").toString))
+        val out = builder.add(toItems)
+        checklist ~> out
+        SourceShape(out.out)
+    }
+  }
+
   def itemsFor(checklist: ChecklistRequest): Iterator[ChecklistItem] = {
     val runWith = sourceForItems(checklist).runWith(Sink.seq)
     Await.result(runWith, 30.second).iterator
   }
 
   private def checklistExists(checklist: ChecklistRequest) = {
-    val runWith = sourceForItems(checklist).runWith(Sink.seq)
+    val runWith = sourceForChecklistSummary(checklist).runWith(Sink.seq)
     Await.result(runWith, 30.second).iterator.nonEmpty
   }
 

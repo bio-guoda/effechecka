@@ -8,21 +8,37 @@ import scala.util.Try
 trait SelectorValidator {
 
   def valid(selector: SelectorParams): Boolean = {
-      Seq(validTaxonList _, validWktString _).forall(_(selector))
+    Seq(validTaxonList _, validWktString _).forall(_ (selector))
+  }
+
+  def invalid(selector: SelectorParams): Boolean = {
+    !valid(selector)
+  }
+
+  def validWktString(selector: SelectorParams): Boolean = {
+    Try {
+      new WKTReader(JtsSpatialContext.GEO, null).parse(selector.wktString)
+    }.isSuccess
+  }
+
+  def validTaxonList(selector: SelectorParams): Boolean = {
+    selector.taxonSelector.matches("""[a-zA-Z,|\s]*""")
+  }
+
+  def validationReport(selector: SelectorParams): String = {
+    val wktStatus = try {
+      new WKTReader(JtsSpatialContext.GEO, null).parse(selector.wktString)
+      None
+    } catch {
+      case e: Exception => Some(s"unsupported wktString [${selector.wktString}]: ${e.getMessage}");
     }
 
-    def invalid(selector: SelectorParams): Boolean = {
-      !valid(selector)
+    val taxonStatus = {
+      if (validTaxonList(selector))
+        None
+      else Some(s"unsupported taxon selector [${selector.taxonSelector}]: taxon names may only contain A-Za-z and whitespaces")
     }
-
-    def validWktString(occurrence: SelectorParams): Boolean = {
-      Try {
-        new WKTReader(JtsSpatialContext.GEO, null).parse(occurrence.wktString)
-      }.isSuccess
-    }
-
-    def validTaxonList(occurrence: SelectorParams): Boolean = {
-      occurrence.taxonSelector.matches("""[a-zA-Z,|\s]*""")
-    }
+    Seq(wktStatus, taxonStatus).flatten.mkString("\n")
+  }
 
 }

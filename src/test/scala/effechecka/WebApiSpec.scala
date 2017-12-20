@@ -170,6 +170,7 @@ class WebApiSpec extends WordSpec with Matchers
     "return requested checklist post invalid wkt" in {
       Post("/checklist", ChecklistRequest(SelectorParams(taxonSelector = "Aves", wktString = "DUCK(-150,-50,40,10)"))) ~> route ~> check {
         assertBadRequest
+        responseAs[String] shouldBe "unsupported wktString [DUCK(-150,-50,40,10)]: Unknown Shape definition [DUCK(-150,-50,40,10)]"
       }
     }
 
@@ -194,6 +195,7 @@ class WebApiSpec extends WordSpec with Matchers
     "return requested checklist invalid uuid with post" in {
       Post("/checklist", ChecklistRequest(SelectorUUID("this-aint-no-uuid"))) ~> route ~> check {
         assertBadRequest
+        responseAs[String] shouldEqual "invalid uuid [this-aint-no-uuid]"
       }
     }
 
@@ -212,6 +214,7 @@ class WebApiSpec extends WordSpec with Matchers
     "occurrenceCollection request invalid taxon" in {
       Get("/occurrences?taxonSelector=%2Fetc%2Fpassword&wktString=ENVELOPE(-150,-50,40,10)") ~> route ~> check {
         assertBadRequest
+        responseAs[String] shouldBe "unsupported taxon selector [/etc/password]: taxon names may only contain A-Za-z and whitespaces"
       }
     }
 
@@ -224,12 +227,14 @@ class WebApiSpec extends WordSpec with Matchers
     "occurrenceCollection request invalid wktString" in {
       Get("/occurrences?taxonSelector=Animalia,Insecta&wktString=DUCK(-150,-50,40,10)") ~> route ~> check {
         assertBadRequest
+        responseAs[String] shouldBe "unsupported wktString [DUCK(-150,-50,40,10)]: Unknown Shape definition [DUCK(-150,-50,40,10)]"
       }
     }
 
     "occurrenceCollection request invalid wktString with post" in {
       Post("/occurrences", OccurrenceRequest(SelectorParams(taxonSelector = "Animalia|Insecta", wktString = "DUCK(-150,-50,40,10)"))) ~> route ~> check {
         assertBadRequest
+        responseAs[String] shouldBe "unsupported wktString [DUCK(-150,-50,40,10)]: Unknown Shape definition [DUCK(-150,-50,40,10)]"
       }
     }
 

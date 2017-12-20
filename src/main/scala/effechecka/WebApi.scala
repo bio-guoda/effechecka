@@ -77,7 +77,7 @@ trait Service extends Protocols
         if (valid(selector)) {
           provide(selector)
         } else {
-          reject(ValidationRejection("this always fails"))
+          complete(HttpResponse(StatusCodes.BadRequest, entity = validationReport(selector)))
         }
       }
       case _ => reject
@@ -137,7 +137,11 @@ trait Service extends Protocols
       handler(request)
     } else {
       complete {
-        StatusCodes.BadRequest
+        selector match {
+          case s: SelectorParams => HttpResponse(StatusCodes.BadRequest, entity = validationReport(s))
+          case s: SelectorUUID => HttpResponse(StatusCodes.BadRequest, entity = s"invalid uuid [${s.uuid}]")
+          case _ => HttpResponse(StatusCodes.BadRequest)
+        }
       }
     }
   }

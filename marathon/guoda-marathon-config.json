@@ -1,22 +1,3 @@
-[![Build Status](https://travis-ci.org/bio-guoda/effechecka.svg?branch=master)](https://travis-ci.org/bio-guoda/effechecka)
-
-# effechecka
-Web API to generate taxonomic checklist, occurrence lists and to help monitor biodiversity data access.
-
-For more information, please visit [our wiki](../../wiki).
-
-For projects/prototypes using this api, please see http://effechecka.org or http://gimmefreshdata.github.io.
-
-# running
-## standalone
-to run the effechecka webservice:
-```sh run-hdfs.sh```
-
-## marathon
-
-In the marathon interface, create an app for the spark dispatcher and effechecka api. You can see the list of configured apps at http://mesos03.acis.ufl.edu:8080/v2/apps. The spark dispatcher and Effechecka app app configs should look like the config below. For more information, see [guoda-marathon-config.json](./marathon/guoda-marathon-config.json). 
-
-```json
 {
   "apps": [
     {
@@ -161,4 +142,3 @@ In the marathon interface, create an app for the spark dispatcher and effechecka
     }
   ]
 }
-```

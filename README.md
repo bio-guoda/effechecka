@@ -89,7 +89,7 @@ In the marathon interface, create an app for the spark dispatcher and effechecka
         "HADOOP_USER_NAME": "hdfs",
         "HADOOP_LIBEXEC_DIR": "/usr/lib/hadoop/libexec"
       },
-      "instances": 1,
+      "instances": 3,
       "cpus": 1,
       "mem": 2048,
       "disk": 0,
@@ -97,8 +97,7 @@ In the marathon interface, create an app for the spark dispatcher and effechecka
       "constraints": [
         [
           "hostname",
-          "CLUSTER",
-          "mesos03.acis.ufl.edu"
+          "UNIQUE"
         ]
       ],
       "uris": [
@@ -148,16 +147,20 @@ In the marathon interface, create an app for the spark dispatcher and effechecka
       "labels": {},
       "acceptedResourceRoles": null,
       "ipAddress": null,
-      "version": "2018-05-22T16:25:38.751Z",
+      "version": "2018-05-22T16:57:13.735Z",
       "versionInfo": {
-        "lastScalingAt": "2018-05-22T16:25:38.751Z",
-        "lastConfigChangeAt": "2018-05-22T16:23:00.487Z"
+        "lastScalingAt": "2018-05-22T16:57:13.735Z",
+        "lastConfigChangeAt": "2018-05-22T16:57:04.866Z"
       },
       "tasksStaged": 0,
-      "tasksRunning": 1,
-      "tasksHealthy": 1,
+      "tasksRunning": 3,
+      "tasksHealthy": 0,
       "tasksUnhealthy": 0,
-      "deployments": []
+      "deployments": [
+        {
+          "id": "e60a92ea-fc41-4184-b474-8a857d5c4551"
+        }
+      ]
     }
   ]
 }

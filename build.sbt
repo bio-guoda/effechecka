@@ -11,15 +11,12 @@ libraryDependencies ++= {
   val akkaV = "2.4.19"
   val akkaHttpV = "10.0.9"
   val scalaTestV = "3.0.1"
-
   val AvroVersion = "1.8.2"
   val ConfigVersion = "1.3.1"
-  val ExtsVersion = "1.54.0"
   val H2Version = "1.4.196"
   val HadoopVersion = "2.7.4"
   val JacksonVersion = "2.9.1"
   val Log4jVersion = "2.7"
-  val OrcVersion = "1.4.0"
   val ParquetVersion = "1.9.0"
   val ScalatestVersion = "3.0.3"
   val Slf4jVersion = "1.7.25"
@@ -37,7 +34,6 @@ libraryDependencies ++= {
     "org.apache.parquet" % "parquet-avro" % ParquetVersion,
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "com.typesafe" % "config" % ConfigVersion,
-    "com.sksamuel.exts" %% "exts" % ExtsVersion,
     "org.slf4j" % "slf4j-api" % Slf4jVersion,
     "commons-lang" % "commons-lang" % "2.6",
     "org.apache.logging.log4j" % "log4j-api" % Log4jVersion % "test",

@@ -4,19 +4,21 @@ import java.util.concurrent.CountDownLatch
 
 import akka.stream.stage.{GraphStage, GraphStageLogic, OutHandler}
 import akka.stream.{Attributes, Outlet, SourceShape}
-import com.sksamuel.exts.Logging
-import io.eels.component.parquet.RowReadSupport
-import io.eels.{FilePattern, Row}
+import effechecka.repackaged.io.eels.component.parquet.RowReadSupport
+import effechecka.repackaged.io.eels.{FilePattern, Row}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.parquet.filter2.compat.FilterCompat
 import org.apache.parquet.hadoop.ParquetReader
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.annotation.tailrec
 
+trait Logging {
+  protected val logger: Logger = LoggerFactory getLogger getClass.getName
+}
 
 trait ParquetReaderIterator extends Logging {
-
   protected implicit val configHadoop: Configuration
   protected implicit val fs: FileSystem
 
@@ -52,7 +54,6 @@ class ParquetReaderSourceShape(filePattern: Option[FilePattern], limit: Option[I
                               (implicit val configHadoop: Configuration, implicit val fs: FileSystem)
   extends GraphStage[SourceShape[Row]]
     with ParquetReaderIterator with Logging {
-
   val out: Outlet[Row] = Outlet("RowSource")
   override val shape: SourceShape[Row] = SourceShape(out)
 

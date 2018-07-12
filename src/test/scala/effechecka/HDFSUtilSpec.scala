@@ -3,7 +3,7 @@ package effechecka
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.testkit.TestKit
-import io.eels.FilePattern
+import effechecka.repackaged.io.eels.FilePattern
 import org.apache.hadoop.fs.Path
 import org.effechecka.selector.DateTimeSelector
 import org.scalatest._

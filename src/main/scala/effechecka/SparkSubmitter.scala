@@ -5,7 +5,6 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import com.sksamuel.exts.Logging
 import com.typesafe.config.Config
 
 import scala.concurrent.duration._

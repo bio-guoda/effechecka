@@ -17,6 +17,7 @@ libraryDependencies ++= {
     "org.slf4j" % "slf4j-log4j12" % "1.7.25",
     "io.eels" %% "eel-core" % eelV,
     "io.eels" %% "eel-components" % eelV,
+    //"org.apache.parquet" % "parquet-avro" % "1.8.3",
     "com.google.guava" % "guava" % "22.0",
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV,
     "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpV % "test",

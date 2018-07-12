@@ -6,7 +6,7 @@ import akka.stream.{ActorMaterializer, SourceShape}
 import akka.stream.scaladsl.{Concat, Flow, GraphDSL, Sink, Source}
 import akka.util.ByteString
 import com.typesafe.config.Config
-import io.eels.Row
+import effechecka.repackaged.io.eels.Row
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.FileSystem
 

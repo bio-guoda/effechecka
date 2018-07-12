@@ -3,9 +3,8 @@ package effechecka
 import java.nio.file.Paths
 import java.util.UUID
 
-import com.sksamuel.exts.Logging
 import com.typesafe.config.Config
-import io.eels.FilePattern
+import effechecka.repackaged.io.eels.FilePattern
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.effechecka.selector.{DateTimeSelector, UuidUtils}
 

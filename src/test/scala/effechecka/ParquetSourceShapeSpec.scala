@@ -8,7 +8,7 @@ import akka.stream.scaladsl.{Flow, GraphDSL, Source}
 import akka.stream.testkit.scaladsl.TestSink
 import akka.testkit.TestKit
 import akka.util.ByteString
-import io.eels.{FilePattern, Row}
+import effechecka.repackaged.io.eels.{FilePattern, Row}
 import org.apache.hadoop.fs.Path
 import org.scalatest.{Matchers, WordSpecLike}
 

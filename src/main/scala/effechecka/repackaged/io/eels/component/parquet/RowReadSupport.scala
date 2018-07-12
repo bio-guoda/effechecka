@@ -5,7 +5,7 @@ import java.nio.{ByteBuffer, ByteOrder}
 import java.sql.{Date, Timestamp}
 import java.time.{LocalDateTime, ZoneId}
 
-import com.sksamuel.exts.Logging
+import effechecka.Logging
 import effechecka.repackaged.io.eels.Row
 import effechecka.repackaged.io.eels.schema._
 import org.apache.hadoop.conf.Configuration

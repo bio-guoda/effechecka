@@ -14,9 +14,7 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import scala.annotation.tailrec
 
-trait Logging {
-  protected val logger: Logger = LoggerFactory getLogger getClass.getName
-}
+
 
 trait ParquetReaderIterator extends Logging {
   protected implicit val configHadoop: Configuration

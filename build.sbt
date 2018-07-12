@@ -17,7 +17,7 @@ libraryDependencies ++= {
   val HadoopVersion = "2.7.4"
   val JacksonVersion = "2.9.1"
   val Log4jVersion = "2.7"
-  val ParquetVersion = "1.9.0"
+  val ParquetVersion = "1.8.3"
   val ScalatestVersion = "3.0.3"
   val Slf4jVersion = "1.7.25"
   val UnivocityVersion = "2.5.7"
@@ -39,9 +39,6 @@ libraryDependencies ++= {
     "org.apache.logging.log4j" % "log4j-api" % Log4jVersion % "test",
     "org.apache.logging.log4j" % "log4j-core" % Log4jVersion % "test",
     "org.apache.logging.log4j" % "log4j-slf4j-impl" % Log4jVersion % "test",
-//    "io.eels" %% "eel-core" % eelV,
-//    "io.eels" %% "eel-components" % eelV,
-    //"org.apache.parquet" % "parquet-avro" % "1.8.3",
     "com.google.guava" % "guava" % "22.0",
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV,
     "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpV % "test",

@@ -1,16 +1,10 @@
 package effechecka
 
-import java.nio.file.Paths
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.{FileIO, Sink}
 import akka.stream.testkit.scaladsl.TestSink
 import akka.testkit.TestKit
 import akka.util.ByteString
-import io.eels.FilePattern
-import io.eels.component.parquet.{ParquetSink, ParquetSource}
-import org.apache.hadoop.fs.Path
 import org.scalatest.{Matchers, WordSpecLike}
 
 class ChecklistFetcherHDFSSpec extends TestKit(ActorSystem("IntegrationTest"))

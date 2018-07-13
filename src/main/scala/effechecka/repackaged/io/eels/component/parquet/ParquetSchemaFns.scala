@@ -8,6 +8,7 @@ import org.apache.parquet.schema._
 import scala.collection.JavaConverters._
 
 /**
+  * adapted from https://github.com/51zero/eel-sdk
   * See parquet formats at https://github.com/Parquet/parquet-format/blob/master/LogicalTypes.md
   */
 object ParquetSchemaFns {

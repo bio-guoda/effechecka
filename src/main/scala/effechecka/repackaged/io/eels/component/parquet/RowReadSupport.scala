@@ -15,6 +15,7 @@ import org.apache.parquet.hadoop.api.ReadSupport.ReadContext
 import org.apache.parquet.io.api._
 import org.apache.parquet.schema.MessageType
 
+// adapted from https://github.com/51zero/eel-sdk
 // required by the parquet reader builder, and returns a record materializer for rows
 class RowReadSupport extends ReadSupport[Row] with Logging {
 

@@ -1,4 +1,5 @@
 package effechecka.repackaged.io.eels.schema
+// adapted from https://github.com/51zero/eel-sdk
 
 object SchemaFn {
   def toFieldType(clz: Class[_]): DataType = {

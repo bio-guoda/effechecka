@@ -1,4 +1,5 @@
 package effechecka.repackaged.io.eels.schema
+// adapted from https://github.com/51zero/eel-sdk
 
 // a named type
 case class Field(name: String,

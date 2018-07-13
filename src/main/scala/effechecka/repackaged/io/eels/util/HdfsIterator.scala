@@ -1,4 +1,5 @@
 package effechecka.repackaged.io.eels.util
+// adapted from https://github.com/51zero/eel-sdk
 
 import org.apache.hadoop.fs.{LocatedFileStatus, RemoteIterator}
 
